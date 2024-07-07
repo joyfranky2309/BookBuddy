@@ -27,7 +27,6 @@ def addbookdata(request):
         author=request.POST["author"]
         isbn=request.POST["ISBN"]
         price=request.POST["price"]
-        print(title,author,isbn,price)
         book=Book()
         book.title=title
         book.author=author
@@ -36,7 +35,7 @@ def addbookdata(request):
         book.save()
         return render(request,"uploadstatus.html",context={"status":"success"})
      else:
-         return render(request,"uploadstatus.html",ccontext={"status":"failure"})
+         return render(request,"uploadstatus.html",context={"status":"failure"})
 
 @login_required
 def edit_book(request, title):
@@ -56,13 +55,14 @@ def edit_book(request, title):
     
     all_students = Student.objects.all()
     return render(request, 'editbook.html', {'book': book, 'students': all_students})
-
+@login_required
 def delete_book(request, title):
     book = get_object_or_404(Book, title=title)
     if request.method == "POST":
         book.delete()
         return redirect('view_books')
-    return render(request, 'deletebook.html', {'book': book})
+    return render(request, 'deletebook.html', context={'book': book})
+@login_required
 def borrow_book(request):
     if request.method == "POST":
         title = request.POST["title"]
@@ -75,6 +75,7 @@ def borrow_book(request):
     books = Book.objects.all()
     students = Student.objects.all()
     return render(request, 'issuebook.html', {'books': books, 'students': students})
+@login_required
 def add_student(request):
     if request.method == "POST":
         roll_number = request.POST["roll_number"]
@@ -83,6 +84,7 @@ def add_student(request):
         student.save()
         return redirect('view_students')
     return render(request, 'addstudent.html')
+@login_required
 def edit_student(request, roll_number):
     student = Student.objects.get(roll_number=roll_number)
     if request.method == "POST":
@@ -90,10 +92,11 @@ def edit_student(request, roll_number):
         student.save()
         return redirect('view_students')
     return render(request, 'editstudent.html', {'student': student})
+@login_required
 def view_students(request):
     students = Student.objects.all()
     return render(request, 'viewstudents.html', {'students': students})
-
+@login_required
 def logout_view(request):
     logout(request)
     next_url = request.GET.get('next', '/')
